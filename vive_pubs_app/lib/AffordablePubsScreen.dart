@@ -14,22 +14,58 @@ class AffordablePubsScreen extends StatefulWidget {
 class AffordablePubsScreenState extends State<AffordablePubsScreen> {
   final List<Pubs> _affordablePubs = <Pubs>[];
   late Future<String> futureAffordable;
+  double _PrecioTotalActual = 15.0; 
 
   @override
   void initState() {
     super.initState();
-    futureAffordable = getAffordablePubs(_affordablePubs);
+    futureAffordable = getAffordablePubs(_affordablePubs, maxPrice: _PrecioTotalActual.toInt());
+  }
+
+  void _reloadPubs() {
+    setState(() {
+      futureAffordable = getAffordablePubs(_affordablePubs, maxPrice: _PrecioTotalActual.toInt());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Affordable Pubs'),
+        title: const Text('Pubs disponibles'),
         backgroundColor: const Color(0xff9aae04),
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Precio maximo:'),
+                    Text('${_PrecioTotalActual.toInt()} €'),
+                  ],
+                ),
+                Slider(
+                  value: _PrecioTotalActual,
+                  min: 0,
+                  max: 50,
+                  divisions: 50,
+                  label: '${_PrecioTotalActual.toInt()} €',
+                  onChanged: (value) {
+                    setState(() {
+                      _PrecioTotalActual = value;
+                    });
+                  },
+                  onChangeEnd: (_) {
+                    _reloadPubs();
+                  },
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: FutureBuilder<String>(
               future: futureAffordable,
@@ -57,9 +93,9 @@ class AffordablePubsScreenState extends State<AffordablePubsScreen> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                Navigator.pop(context); // Vuelve a la pantalla anterior (todos los pubs)
+                Navigator.pop(context);
               },
-              child: const Text('Back to All Pubs'),
+              child: const Text('Todos los pubs'),
             ),
           ),
         ],
@@ -68,7 +104,7 @@ class AffordablePubsScreenState extends State<AffordablePubsScreen> {
   }
 }
 
-Future<String> getAffordablePubs(List<Pubs> targetList, {int maxPrice = 15}) async {
+Future<String> getAffordablePubs(List<Pubs> targetList, {required int maxPrice}) async {
   final response = await http.get(Uri.parse('http://localhost:1337/api/pubs/affordable?maxPrice=$maxPrice'));
   if (response.statusCode == 200) {
     final dynamic body = jsonDecode(response.body);

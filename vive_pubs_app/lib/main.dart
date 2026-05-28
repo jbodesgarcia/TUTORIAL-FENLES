@@ -27,11 +27,11 @@ class EverisFridayState extends State<EverisFridayApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Everis Fridays Pub',
+      title: 'Lista de todos los pubs',
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Everis Fridays Pub'),
-          backgroundColor: const Color(0xff9aae04),
+          title: const Text('Lista de todos los pubs'),
+          backgroundColor: const Color.fromARGB(255, 4, 112, 174),
         ),
         body: Builder(
           builder: (context) => Column(
@@ -51,7 +51,7 @@ class EverisFridayState extends State<EverisFridayApp> {
                       MaterialPageRoute(builder: (context) => const AffordablePubsScreen()),
                     );
                   },
-                  child: const Text('Show Affordable Pubs'),
+                  child: const Text('Pubs disponibles'),
                 ),
               ),
             ],
